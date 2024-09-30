@@ -28,22 +28,29 @@ async function run() {
     const cartsCollection = client.db('BistroBoss').collection('carts');
 
     // create user
-      app.post('/users', async (req, res) => {
-        const user = req.body;
-        // insert email if user doesn't exists:
-        // you can do this many ways (1. email unique, 2. upsert 3. simple checking)
-        const query = { email: user.email };
-        const existingUser = await userCollection.findOne(query);
-        if (existingUser) {
-          return res.send({ message: 'user already exists', insertedId: null });
-        }
-        const result = await userCollection.insertOne(user);
-        res.send(result);
-      });
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      // insert email if user doesn't exists:
+      // you can do this many ways (1. email unique, 2. upsert 3. simple checking)
+      const query = { email: user.email };
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        return res.send({ message: 'user already exists', insertedId: null });
+      }
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
 
     // get users
     app.get('/users', async (req, res) => {
       const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+    // user delete
+    app.delete('/user/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.deleteOne(query);
       res.send(result);
     });
     // get menu
